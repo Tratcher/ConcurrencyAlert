@@ -1,6 +1,4 @@
 using ConcurrencyAlert;
-using Microsoft.Extensions.Logging;
-using System.Runtime.CompilerServices;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -12,18 +10,19 @@ var logger = factory.CreateLogger("Request Logger");
 
 app.Use((context, next) =>
 {
-    var t1 = Task.Run(() =>
-    {
-        logger.LogInformation(StringifyRequest(context));
-    });
-
+    // Bad Concurrency
+    var t1 = Task.Run(() => BackgroundTask(context));
     var t2 = Task.Run(async () => await next(context));
     return Task.WhenAll(t1, t2);
 });
 
-app.MapGet("{**catch-all}", context => context.Response.WriteAsync(StringifyRequest(context)));
+app.MapGet("{**catch-all}", RequestEndpoint);
 
 app.Run();
+
+void BackgroundTask(HttpContext context) => logger.LogInformation(StringifyRequest(context));
+
+Task RequestEndpoint(HttpContext context) => context.Response.WriteAsync(StringifyRequest(context));
 
 static string StringifyRequest(HttpContext context)
 {
