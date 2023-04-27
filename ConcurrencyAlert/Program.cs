@@ -11,6 +11,7 @@ var logger = factory.CreateLogger("Request Logger");
 app.Use((context, next) =>
 {
     // Bad Concurrency
+    var services = context.RequestServices;
     var t1 = Task.Run(() => BackgroundTask(context));
     var t2 = Task.Run(async () => await next(context));
     return Task.WhenAll(t1, t2);

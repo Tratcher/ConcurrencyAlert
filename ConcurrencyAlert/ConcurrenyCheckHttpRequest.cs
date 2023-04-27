@@ -2,17 +2,16 @@
 
 internal class ConcurrenyCheckHttpRequest : HttpRequest
 {
-    private readonly HttpContext _context;
+    private readonly ConcurrenyCheckHttpContext _context;
     private readonly HttpRequest _request;
     private readonly ConcurrencyCheck _check;
 
-    internal ConcurrenyCheckHttpRequest(HttpContext context, HttpRequest request, ConcurrencyCheck check)
+    internal ConcurrenyCheckHttpRequest(ConcurrenyCheckHttpContext context, HttpRequest request, ConcurrencyCheck check)
     {
         _context = context;
         _request = request;
         _check = check;
     }
-
     public override HttpContext HttpContext => _context;
     public override string Method { get => _check.Do(() => _request.Method); set => _check.Do(() => _request.Method = value); }
     public override string Scheme { get => _check.Do(() => _request.Scheme); set => _check.Do(() => _request.Scheme = value); }

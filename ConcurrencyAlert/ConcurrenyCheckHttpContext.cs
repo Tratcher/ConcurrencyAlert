@@ -7,8 +7,8 @@ internal class ConcurrenyCheckHttpContext : HttpContext
 {
     private readonly ConcurrencyCheck _check = new();
     private readonly HttpContext _context;
-    private readonly HttpRequest _request;
-    private readonly HttpResponse _response;
+    private readonly ConcurrenyCheckHttpRequest _request;
+    private readonly ConcurrenyCheckHttpResponse _response;
 
     internal ConcurrenyCheckHttpContext(HttpContext context)
     {
@@ -16,6 +16,8 @@ internal class ConcurrenyCheckHttpContext : HttpContext
         _request = new ConcurrenyCheckHttpRequest(this, _context.Request, _check);
         _response = new ConcurrenyCheckHttpResponse(this, _context.Response, _check);
     }
+
+    public HttpContext OriginalContext => _context;
 
     public override IFeatureCollection Features => _context.Features; // TODO: Guard collection?
 
